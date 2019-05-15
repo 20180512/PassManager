@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PassList">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:background="@drawable/passlist_title_bar"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="搜索"
+                android:inputType="textPersonName"
+                android:textColorHint="@color/hint_color"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/text_pass_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="left|center_vertical"
+                android:text="密码列表"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/search_img"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search_black"
+                tools:ignore="VectorDrawableCompat" />
+
+            <ImageView
+                android:id="@+id/add_view"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_add_95dp"
+                tools:ignore="VectorDrawableCompat" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_pass_list" />
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@color/dialog_title"
+        android:gravity="center_vertical"
+        android:text=" ⬛请输入密码！"
+        android:textAlignment="center"
+        android:textColor="@color/dialog_text"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/pass_deco"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/textback"
+        android:ems="10"
+        android:hint="密码"
+        android:inputType="textPassword"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/textview_pass"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/textback"
+        android:gravity="center"
+        android:text="TextView"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/db_list"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/textback"
+        android:minHeight="25dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/quit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_type_update"
+            android:text=" ⬛ 修改"
+            android:textColor="@drawable/text_type_update" />
+
+        <Button
+            android:id="@+id/back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_type_update"
+            android:text=" ⬛ 提交"
+            android:textColor="@drawable/text_type_update" />
+    </LinearLayout>
+</LinearLayout>
