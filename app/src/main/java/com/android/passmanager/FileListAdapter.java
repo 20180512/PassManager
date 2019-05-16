@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
 
 public class FileListAdapter extends BaseAdapter {
     private Context mContext;
@@ -38,7 +39,7 @@ public class FileListAdapter extends BaseAdapter {
         if(convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.db_file_item_layout,parent,false);
             holder = new ViewHolder();
-            holder.title = convertView.findViewById(R.id.file_name);
+            holder.title = convertView.findViewById( R.id.file_name);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder) convertView.getTag();

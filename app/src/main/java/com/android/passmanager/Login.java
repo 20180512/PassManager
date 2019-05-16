@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,7 +27,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import passmanage.android.com.Util.Aes;
+
+
+import com.android.passmanager.Util.Aes;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -36,11 +38,10 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
-import java.util.LinkedList;
 
-import static passmanage.android.com.Util.Aes.decrypt;
-import static passmanage.android.com.Util.Aes.encrypt;
-import static passmanage.android.com.Util.MyToast.showToast;
+
+import static com.android.passmanager.Util.MyToast.showToast;
+
 
 public class Login extends AppCompatActivity {
     private EditText userin;
@@ -102,7 +103,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userinStr =userin.getText().toString().trim();
-                passinStr =Aes.getMD5(passin.getText().toString().trim(),16 );
+                passinStr = Aes.getMD5(passin.getText().toString().trim(),16 );
                 if (passin.getText().toString().trim().equals( "" )&&userinStr.equals( "" )){
                     showToast( Login.this,"请输入账号密码！",1000 );
                 }else if (userinStr.equals( "" )){

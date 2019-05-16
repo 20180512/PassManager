@@ -6,7 +6,7 @@ def releaseTime() {
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "passmanage.android.com"
+        applicationId "com.android.passmanager"
         minSdkVersion 18
         targetSdkVersion 28
         versionCode 10

@@ -1,4 +1,4 @@
-package passmanage.android.com.Util;
+package com.android.passmanager.Util;
 
 import android.annotation.SuppressLint;
 import android.util.Log;

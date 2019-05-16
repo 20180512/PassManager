@@ -1,4 +1,4 @@
-package passmanage.android.com.Util;
+package com.android.passmanager.Util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,8 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static passmanage.android.com.Util.FileUtil.fileCopy;
-import static passmanage.android.com.Util.FileUtil.reNameFile;
+import static com.android.passmanager.Util.FileUtil.fileCopy;
 
 /**
  * 数据库还原类

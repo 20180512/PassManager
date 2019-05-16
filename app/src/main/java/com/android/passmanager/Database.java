@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -9,8 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-
-import static passmanage.android.com.Util.MyToast.showToast;
 
 public class Database extends SQLiteOpenHelper {
     private String TABLE_NAME ;

@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,8 +23,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
-import passmanage.android.com.Util.DbUtil;
-import passmanage.android.com.Util.FileUtil;
+
+
+import com.android.passmanager.Util.DbUtil;
+import com.android.passmanager.Util.FileUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -33,9 +35,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import static passmanage.android.com.Util.Aes.*;
-import static passmanage.android.com.Util.DbUtil.StringFilter;
-import static passmanage.android.com.Util.MyToast.showToast;
+import static com.android.passmanager.Util.Aes.decrypt;
+import static com.android.passmanager.Util.Aes.encrypt;
+import static com.android.passmanager.Util.Aes.getMD5;
+import static com.android.passmanager.Util.MyToast.showToast;
+
 
 public class PassList extends AppCompatActivity{
     private GridView gridView;
@@ -482,7 +486,7 @@ public class PassList extends AppCompatActivity{
         btn_xixi.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int i=FileUtil.deleteFile( files[position].getName() );
+                int i= FileUtil.deleteFile( files[position].getName() );
                 if(i==0){
                     showToast( PassList.this,"删除成功！",1000 );
                 }else if(i==1){

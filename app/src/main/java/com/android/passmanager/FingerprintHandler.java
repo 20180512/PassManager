@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.v4.app.ActivityCompat;
 
-import static passmanage.android.com.Util.MyToast.showToast;
+import static com.android.passmanager.Util.MyToast.showToast;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {

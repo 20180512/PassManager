@@ -1,22 +1,19 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.LinkedList;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static passmanage.android.com.Util.Aes.decrypt;
-import static passmanage.android.com.Util.Aes.encrypt;
+
 
 /**
  * Instrumented test, which will execute on an Android device.

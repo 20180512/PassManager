@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 import android.content.Context;
 import android.os.Build;
@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import java.util.LinkedList;
 
-import static passmanage.android.com.Util.Aes.decrypt;
+
+import static com.android.passmanager.Util.Aes.decrypt;
+
 
 public class AccountAdapter extends BaseAdapter {
     private String inPass;

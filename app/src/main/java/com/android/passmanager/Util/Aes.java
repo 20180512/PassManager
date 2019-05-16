@@ -1,4 +1,4 @@
-package passmanage.android.com.Util;
+package com.android.passmanager.Util;
 
 import android.text.TextUtils;
 import android.util.Base64;

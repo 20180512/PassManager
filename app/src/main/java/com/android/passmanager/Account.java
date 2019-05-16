@@ -1,4 +1,4 @@
-package passmanage.android.com;
+package com.android.passmanager;
 
 public class Account  {
     String title;
