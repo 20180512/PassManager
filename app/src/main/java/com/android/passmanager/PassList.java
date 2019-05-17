@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
@@ -185,6 +186,7 @@ public class PassList extends AppCompatActivity{
 
 
         gridView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onItemClick(AdapterView <?> parent , View view , final int position , long id) {
                 final Dialog dialog = getDialog( view );
@@ -193,7 +195,6 @@ public class PassList extends AppCompatActivity{
                 final Button enter = dialog.findViewById( R.id.back );
                 final int posi = position;
                 String cryptoGraph = accountAdapter.getAccountList().get( posi ).getPassword().trim();
-                //String s = editText.getText().toString();
                 TextView textView = dialog.findViewById( R.id.textview_pass );
                 final String clearPass = decrypt( inPass , cryptoGraph );
                 textView.setVisibility( View.VISIBLE );
@@ -281,7 +282,7 @@ public class PassList extends AppCompatActivity{
     }
 
     private File[] getDBFiles() {
-        File file  = new File("/sdcard/PassManage");
+        File file  = new File( Environment.getExternalStorageDirectory().getPath() + File.separator + "PassManage" );
         if (!file.exists()) {
             file.mkdirs();
         }

@@ -16,7 +16,6 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -51,7 +50,7 @@ public class Login extends AppCompatActivity {
     private String userinStr;
     private EditText passin;
     private String passinStr;
-    private TextView tip;
+    private TextView tip,underText;
     private String[] str;
     private ImageView fingerview;
     private boolean fingerTouch=true;
@@ -77,12 +76,22 @@ public class Login extends AppCompatActivity {
         webSettings.setSupportZoom(false);
         mWebView.loadUrl("file:///android_asset/login_background.html");
         tip= findViewById( R.id.tip );
+        underText=findViewById( R.id.lost_passid );
         login =new Database( this , "login.db" , null , 1,"Login"  );
         str =login.getDate();
         userin = findViewById( R.id.userinput);
         if(str!=null){
             userin.setText( str[0] );
+        }else {
+            tip.setText( getString(R.string.input_then_query) );
         }
+        underText.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //帮助文字
+                // underText.setText(  );
+            }
+        } );
         //数据升级操作
         /*tip.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -107,13 +116,13 @@ public class Login extends AppCompatActivity {
                 userinStr =userin.getText().toString().trim();
                 passinStr = Aes.getMD5(passin.getText().toString().trim(),16 );
                 if (passin.getText().toString().trim().equals( "" )&&userinStr.equals( "" )){
-                    showToast( Login.this,"请输入账号密码！",1000 );
+                    showToast( Login.this,getString(R.string.input_name_password),1000 );
                 }else if (userinStr.equals( "" )){
-                    showToast( Login.this,"请输入账号！",1000 );
-                    Log.w(TAG,"name empty");
+                    showToast( Login.this,getString(R.string.input_name),1000 );
+                    Log.w(TAG,"loginName empty");
                 }else if(passin.getText().toString().trim().equals( "" )){
-                    showToast( Login.this,"请输入密码！",1000 );
-                    Log.w(TAG,"pass empty");
+                    showToast( Login.this,getString(R.string.input_password),1000 );
+                    Log.w(TAG,"password empty");
                 }else if(str!=null&&userinStr.equals( str[0] )&&passinStr.equals( str[1] )){
                     Intent intent =new Intent( Login.this,PassList.class );
                     intent.putExtra( "p",passinStr );
@@ -122,14 +131,14 @@ public class Login extends AppCompatActivity {
                     startAuth( 0 );
                 }else if(str==null){
                     final String clearPass =passin.getText().toString().trim();
-                    login.addData( new Account("login",userinStr,passinStr));
+
                     //showToast( Login.this,"你的密码是："+passin.getText().toString().trim()+"，请保管妥当",3000 );
                     final Dialog dialog = new Dialog( v.getContext() );
                     dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
                     dialog.setCancelable( true );
                     dialog.setContentView( R.layout.pass_input_auth_dialog );
                     TextView dialogName =dialog.findViewById( R.id.dialog_title );
-                    dialogName.setText( "请牢记以下密码！" );
+                    dialogName.setText( getString(R.string.remenber_tip) );
                     final EditText editText = dialog.findViewById( R.id.pass_deco );
                     TextView textView = dialog.findViewById( R.id.textview_pass );
                     final Button update = dialog.findViewById( R.id.quit );
@@ -137,15 +146,16 @@ public class Login extends AppCompatActivity {
                     editText.setVisibility( View.GONE );
                     textView.setVisibility( View.VISIBLE );
                     textView.setText( clearPass );
-                    enter.setText( " ⬛ 复制" );
-                    update.setText( " ⬛ 我已记住" );
+                    enter.setText( getString(R.string.copy) );
+                    update.setText( getString(R.string.i_am_remenber) );
                     enter.setOnClickListener( new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
                             ClipData clip = ClipData.newPlainText( null , clearPass );
                             clipboard.setPrimaryClip( clip );
-                            showToast( Login.this,"已复制到剪切板！",1000 );
+                            Log.i( TAG,"password copy into clipboard" );
+                            showToast( Login.this,getString(R.string.copyed),1000 );
                         }
                     } );
 
@@ -156,17 +166,22 @@ public class Login extends AppCompatActivity {
                             intent.putExtra( "p",passinStr );
                             intent.putExtra( "firstTag","yes" );
                             startActivity( intent );
+                            //用户点击已记住将密码写进数据库
+                            login.addData( new Account("login",userinStr,passinStr));
+                            Log.i( TAG,"password write into db" );
+
                             Login.this.finish();
                             startAuth( 0 );
                             dialog.dismiss();
+
 
                         }
                     } );
                     dialog.show();
 
                 }else{
-                    showToast( Login.this,"账号密码错误！",3000 );
-                    Log.w(TAG,"pass err");
+                    showToast( Login.this,getString(R.string.login_name_password_err),3000 );
+                    Log.w(TAG,"password err");
 
                 }
 
@@ -250,21 +265,21 @@ public class Login extends AppCompatActivity {
             KeyguardManager keyguardManager = (KeyguardManager) getSystemService( KEYGUARD_SERVICE );
             FingerprintManager fingerprintManager = (FingerprintManager) getSystemService( FINGERPRINT_SERVICE );
             if (!fingerprintManager.isHardwareDetected()&&fingerTouch) {
-                tip.setText( "设备不支持指纹验证" );
+                tip.setText( getString(R.string.click_to_login) );
                 fingerTouch=false;
                 userin = findViewById( R.id.userinput);
                 userin.setText( Build.MODEL );
             }else if (fingerTouch){
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
-                    showToast( Login.this,"请授予指纹权限！",1000 );
+                    showToast( Login.this,getString(R.string.please_accect_permission),1000 );
                 }
 
                 if (!fingerprintManager.hasEnrolledFingerprints()) {
-                    showToast( Login.this,"设备还没有录入指纹！",1000 );
+                    showToast( Login.this,getString(R.string.no_finger),1000 );
                 }
 
                 if (!keyguardManager.isKeyguardSecure()) {
-                    showToast( Login.this,"解锁之后再次尝试！",1000 );
+                    showToast( Login.this,getString(R.string.unlock_then_try),1000 );
                 } else {
                     try {
                         generateKey();

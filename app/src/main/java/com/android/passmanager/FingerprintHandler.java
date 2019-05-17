@@ -52,11 +52,11 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
     @Override
     public void onAuthenticationFailed() {
-        showToast(activity,"验证失败！",1000);
+        showToast(activity,context.getString(R.string.Auth_fail),1000);
         AuthTimes++;
         if (AuthTimes>=3){
             finishAuth();
-            showToast(activity,"三次错误，退出验证！",1000);
+            showToast(activity,context.getString(R.string.third_failed),1000);
         }
     }
 
@@ -67,7 +67,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         if(firstIn){
-            showToast(context,"第一次请使用密码登录！",1000);
+            showToast(context,"第一次请输入账号密码注册！",1000);
         }else{
             finishAuth();
             Intent i = new Intent(context, PassList.class);

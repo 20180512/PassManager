@@ -2,16 +2,16 @@
 <resources>
     <color name="colorPrimary">#c2c2c2</color>
     <color name="colorPrimaryDark">#262626</color>
-    <color name="colorAccent">#16aedc</color>
+    <color name="colorAccent">#16AEDC</color>
     <color name="color">#bf8f4fe4</color>
     <color name="textc">#E4E4E4</color>
     <color name="hint_color">#979797</color>
-    <color name="colorFingerBack">#459fff</color>
+    <color name="colorFingerBack">#459FFF</color>
     <color name="layoutcolor">#00ffffff</color>
     <color name="dialog_title">#49463e</color>
     <color name="dialog_text">#afaa95</color>
     <color name="textback">#dfdbc8</color>
     <color name="title_color">#16aedc</color>
-    <color name="theme_color">#1d9a00</color>
+    <color name="theme_color">#3ACB19</color>
     <color name="card">#BF797979</color>
 </resources>
