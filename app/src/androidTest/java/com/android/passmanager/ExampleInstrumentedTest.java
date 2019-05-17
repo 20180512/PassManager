@@ -32,7 +32,7 @@ public class ExampleInstrumentedTest {
         onView( withId( R.id.passinput ) ).perform( replaceText( "1521" ),closeSoftKeyboard());
         onView( withId( R.id.fingerView) ).perform( click() );
         //onView( withId( R.id.add_view ) ).perform( click() );
-        for(int i =0;i<100;i++){
+        /*for(int i =0;i<100;i++){
             onView( withId( R.id.add_view ) ).perform( click() );
             onView( withId( R.id.title ) ).perform( replaceText( "示例标题"+i ) );
             onView( withId( R.id.account ) ).perform( replaceText("示例账号"+i  ) );
@@ -41,7 +41,7 @@ public class ExampleInstrumentedTest {
             //onView( withId( R.id.secPass ) ).perform( replaceText( "123" ) );
             //add_new_message
             onView( withId( R.id.add_new_message) ).perform( click() );
-        }
+        }*/
 
         try {
             Thread.sleep( 50000 );

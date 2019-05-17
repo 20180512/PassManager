@@ -61,9 +61,9 @@ public class AccountAdapter extends BaseAdapter {
         if(convertView == null){
             convertView = layoutInflater.inflate(R.layout.acount_list_itme_layout,parent,false);
             holder = new ViewHolder();
-            holder.account =convertView.findViewById( R.id.account_item );
-            holder.title = convertView.findViewById(R.id.title_item);
-            holder.password=convertView.findViewById( R.id.pass_item );
+            holder.account =convertView.findViewById(    R.id.account_item );
+            holder.title = convertView.findViewById(     R.id.title_item);
+            holder.password=convertView.findViewById(     R.id.pass_item );
             holder.linearLayout=convertView.findViewById( R.id.item_view );
             /*holder.add=convertView.findViewById( R.id.ic_add );*/
             convertView.setTag(holder);
