@@ -19,6 +19,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebSettings;
@@ -44,11 +45,12 @@ import static com.android.passmanager.Util.MyToast.showToast;
 
 
 public class Login extends AppCompatActivity {
+
+    private static final String TAG = "Login";
     private EditText userin;
     private String userinStr;
     private EditText passin;
     private String passinStr;
-    private static final String TAG = "Login";
     private TextView tip;
     private String[] str;
     private ImageView fingerview;
@@ -108,8 +110,10 @@ public class Login extends AppCompatActivity {
                     showToast( Login.this,"请输入账号密码！",1000 );
                 }else if (userinStr.equals( "" )){
                     showToast( Login.this,"请输入账号！",1000 );
+                    Log.w(TAG,"name empty");
                 }else if(passin.getText().toString().trim().equals( "" )){
                     showToast( Login.this,"请输入密码！",1000 );
+                    Log.w(TAG,"pass empty");
                 }else if(str!=null&&userinStr.equals( str[0] )&&passinStr.equals( str[1] )){
                     Intent intent =new Intent( Login.this,PassList.class );
                     intent.putExtra( "p",passinStr );
@@ -162,6 +166,8 @@ public class Login extends AppCompatActivity {
 
                 }else{
                     showToast( Login.this,"账号密码错误！",3000 );
+                    Log.w(TAG,"pass err");
+
                 }
 
 
