@@ -10,7 +10,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:background="@drawable/passlist_title_bar"
+        android:background="@color/colorPrimary"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:gravity="left|center_vertical"
                 android:text="密码列表"
                 android:textAlignment="center"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textback"
                 android:textSize="24sp" />
 
             <ImageView
@@ -49,10 +49,10 @@
                 tools:ignore="VectorDrawableCompat" />
 
             <ImageView
-                android:id="@+id/add_view"
+                android:id="@+id/backup_list"
                 android:layout_width="45dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_add_95dp"
+                app:srcCompat="@drawable/ic_storage_black"
                 tools:ignore="VectorDrawableCompat" />
 
         </LinearLayout>

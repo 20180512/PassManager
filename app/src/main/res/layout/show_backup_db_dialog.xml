@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/all"
+    android:layout_width="380dp"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@color/dialog_title"
+        android:gravity="center_vertical"
+        android:text=" 备份还原"
+        android:textAlignment="center"
+        android:textColor="@color/dialog_text"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/db_list"
+        android:layout_width="380dp"
+        android:layout_height="250dp"
+        android:background="@color/textback"
+        android:minHeight="25dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/quit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_type_update"
+            android:text=" ⬛ 取消"
+            android:textColor="@drawable/text_type_update" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/dialog_text" />
+
+        <Button
+            android:id="@+id/backup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_type_update"
+            android:text=" ⬛ 备份"
+            android:textColor="@drawable/text_type_update" />
+    </LinearLayout>
+</LinearLayout>

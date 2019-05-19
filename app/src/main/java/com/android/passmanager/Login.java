@@ -136,19 +136,16 @@ public class Login extends AppCompatActivity {
                     final Dialog dialog = new Dialog( v.getContext() );
                     dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
                     dialog.setCancelable( true );
-                    dialog.setContentView( R.layout.pass_input_auth_dialog );
+                    dialog.setContentView( R.layout.pass_show_dialog );
                     TextView dialogName =dialog.findViewById( R.id.dialog_title );
                     dialogName.setText( getString(R.string.remenber_tip) );
-                    final EditText editText = dialog.findViewById( R.id.pass_deco );
                     TextView textView = dialog.findViewById( R.id.textview_pass );
-                    final Button update = dialog.findViewById( R.id.quit );
-                    final Button enter = dialog.findViewById( R.id.back );
-                    editText.setVisibility( View.GONE );
-                    textView.setVisibility( View.VISIBLE );
+                    final Button update = dialog.findViewById( R.id.updata );
+                    final Button copy = dialog.findViewById( R.id.copy );
                     textView.setText( clearPass );
-                    enter.setText( getString(R.string.copy) );
+                    copy.setText( getString(R.string.copy) );
                     update.setText( getString(R.string.i_am_remenber) );
-                    enter.setOnClickListener( new View.OnClickListener() {
+                    copy.setOnClickListener( new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );

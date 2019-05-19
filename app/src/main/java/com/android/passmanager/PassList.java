@@ -7,7 +7,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,13 +20,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
-
 import com.android.passmanager.Util.DbUtil;
 import com.android.passmanager.Util.FileUtil;
 import com.android.passmanager.Util.SurperAdapter;
@@ -41,80 +38,83 @@ import java.util.List;
 
 import static com.android.passmanager.Util.Aes.decrypt;
 import static com.android.passmanager.Util.Aes.encrypt;
-import static com.android.passmanager.Util.Aes.getMD5;
 import static com.android.passmanager.Util.MyToast.showToast;
 
 
 public class PassList extends AppCompatActivity {
+    private static final String TAG ="PassList" ;
     private RecyclerView gridView;
     private TextView title_text;
     private EditText search_ed;
     private ImageView serch_img;
-    private Context mContext;
     private FileListAdapter myAdapter;
     private String inPass;
+    private ImageView backupIcon;
     float x;
     private LinkedList <Account> s;
-    private SurperAdapter <Account> RecyAdapter;
+    private SurperAdapter<Account> accountAdapter;
     private String firstInTag;
+    private FloatingActionButton add;
     Database passDb = new Database( this , "passEngine.db" , null , 1 , "Pass" );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_pass_list );
-
-        FloatingActionButton add = findViewById( R.id.floatingActionButton );
-        //add.setHideMotionSpec(  );
-        Toolbar toolbar = findViewById( R.id.toolbar );
-        setSupportActionBar( toolbar );
+        //检查权限
         requestPermission();
-        mContext = this;
-        RecyAdapter = new SurperAdapter <Account>( s , mContext ) {
+        
+        initView();
+        
+        initData();
+        
+        initAction();
+        /*Toolbar toolbar = findViewById( R.id.toolbar );
+        setSupportActionBar( toolbar );*/
+        refresh( 0 );
+    }
+
+    private void initData() {
+        inPass = getIntent().getStringExtra( "p" );
+        firstInTag = getIntent().getStringExtra( "firstTag" );
+        accountAdapter = new SurperAdapter <Account>(s,this) {
             @Override
             public int getLayoutId(int viewType) {
                 return R.layout.acount_list_itme_layout;
             }
 
             @Override
-            public void convert(VH holder , Account data , final int position , Context mContext) {
-                holder.setText( R.id.title_item , decrypt( inPass , data.getTitle() ) );
-                holder.setText( R.id.account_item , decrypt( inPass , data.getAccount() ) );
+            public void convert(final VH holder , Account data , final int position , Context mContext) {
+                holder.setText( R.id.title_item,decrypt( inPass,data.getTitle() ) );
+                holder.setText( R.id.account_item,decrypt( inPass,data.getAccount() ) );
                 holder.itemView.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Dialog dialog = getDialog( v );
-                        final EditText editText = dialog.findViewById( R.id.pass_deco );
-                        final Button update = dialog.findViewById( R.id.quit );
-                        final Button enter = dialog.findViewById( R.id.back );
-                        final int posi = position;
-                        String cryptoGraph = RecyAdapter.getmDatas().get( posi ).getPassword().trim();
-                        TextView textView = dialog.findViewById( R.id.textview_pass );
-                        final String clearPass = decrypt( inPass , cryptoGraph );
-                        textView.setVisibility( View.VISIBLE );
-                        textView.setText( clearPass );
-                        editText.setVisibility( View.GONE );
-                        enter.setText( " ⬛ 复制" );
-                        enter.setOnClickListener( new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
-                                ClipData clip = ClipData.newPlainText( null , clearPass );
-                                clipboard.setPrimaryClip( clip );
-                                showToast( PassList.this , "密码已复制到粘贴板" , 1000 );
-                            }
-                        } );
-
-                        update.setOnClickListener( new View.OnClickListener() {
+                        final Dialog dialog=getDialog( v, 2);
+                        final TextView pass =dialog.findViewById( R.id.textview_pass );
+                        pass.setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getPassword()) );
+                        Button up = dialog.findViewById( R.id. updata);
+                        up.setOnClickListener( new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 dialog.dismiss();
-                                final BottomSheetDialog bottomSheetDialog = getBottomSheetDialog( v );
-                                final TextView[] t = inBottomSheetDialog( bottomSheetDialog );
-                                t[0].setText( " ⬛ 修改" );
-                                t[1].setText( decrypt( inPass , RecyAdapter.getmDatas().get( position ).getTitle() ) );
-                                t[2].setText( decrypt( inPass , RecyAdapter.getmDatas().get( position ).getAccount() ) );
-                                behavior( t , bottomSheetDialog , posi );
+                                BottomSheetDialog bottomSheetDialog=getBottomSheetDialog( v );
+                                TextView[] t=inBottomSheetDialog( bottomSheetDialog );
+                                t[0].setText( "修改" );
+                                t[1].setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getTitle()) );
+                                t[2].setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getAccount()) );
+                                bottomSheetDialog.show();
+                            }
+                        } );
+                        Button copy=dialog.findViewById(  R.id.copy );
+                        copy.setOnClickListener( new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
+                                ClipData clip = ClipData.newPlainText( null , pass.getText().toString().trim() );
+                                clipboard.setPrimaryClip( clip );
+                                showToast( PassList.this , "密码已复制到粘贴板" , 1000 );
+                                dialog.dismiss();
                             }
                         } );
                         dialog.show();
@@ -123,50 +123,30 @@ public class PassList extends AppCompatActivity {
                 holder.itemView.setOnLongClickListener( new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        final Dialog dialog = getDialog( v );
-                        final EditText editText = dialog.findViewById( R.id.pass_deco );
-                        final Button delete = dialog.findViewById( R.id.quit );
-                        final Button deleteAll = dialog.findViewById( R.id.back );
-                        final int posi = position;
-                        delete.setText( " ⬛ 删除" );
-                        deleteAll.setText( " ⬛ 删除全部" );
-                        delete.setOnClickListener( new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                passDb.deleteData( RecyAdapter.getmDatas().get( posi ).getId() );
-                                showToast( PassList.this , "已删除!" , 1000 );
-                                bindView( 0 );
-                                dialog.dismiss();
-                            }
-                        } );
-                        deleteAll.setOnClickListener( new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //String cryptoGraph = accountAdapter.getAccountList().get( posi ).getPassword().trim();
-                                String s = getMD5( editText.getText().toString() , 16 );
-                                //final String clearPass = decrypt( getMD5( s , 16 ) , cryptoGraph );
-                                if (s.equals( inPass )) {
-                                    passDb.deleteAll();
-                                    showToast( PassList.this , "已删除全部！" , 1000 );
-                                    dialog.dismiss();
-                                    bindView( 0 );
-                                } else {
-                                    showToast( PassList.this , "密码错误！" , 1000 );
-                                }
-                            }
-                        } );
-                        dialog.show();
-                        return true;
+
+                        return false;
                     }
                 } );
-
             }
         };
-        inPass = getIntent().getStringExtra( "p" );
-        firstInTag = getIntent().getStringExtra( "firstTag" );
-        title_text = findViewById( R.id.text_pass_list );
-        search_ed = findViewById( R.id.search );
-        serch_img = findViewById( R.id.search_img );
+    }
+
+    private void initAction() {
+        add.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firstInTag != null && firstInTag.equals( "yes" )) {
+                    View view=getView( R.layout.meg_dialog );
+                    popWindowsShow( v,v.getWidth() - 65,0 ,view);
+                    firstInTag = null;
+                }
+
+                final BottomSheetDialog bottomSheetDialog = getBottomSheetDialog( v );
+                TextView[] t = inBottomSheetDialog( bottomSheetDialog );
+                behavior( t , bottomSheetDialog , -1 );
+            }
+        } );
+
         serch_img.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,6 +159,7 @@ public class PassList extends AppCompatActivity {
                 }
             }
         } );
+        
         search_ed.addTextChangedListener( new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s , int start , int count , int after) {
@@ -190,56 +171,30 @@ public class PassList extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                bindView( 1 );
+                refresh( 1 );
             }
         } );
-        gridView = findViewById( R.id.pass_list );
-        ImageView add_image = findViewById( R.id.add_view );
-        add_image.setOnClickListener( new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(View view) {
-                if (firstInTag != null && firstInTag.equals( "yes" )) {
-                    messageDialog( view );
-                    firstInTag = null;
-                }
 
-                final BottomSheetDialog bottomSheetDialog = getBottomSheetDialog( view );
-                TextView[] t = inBottomSheetDialog( bottomSheetDialog );
-                for (int i = 0; i < t.length; i++) {
-                    t[i].setTextColor( Color.BLACK );
-                    t[i].setHintTextColor( getColor( R.color.hint_color ) );
-                }
-                behavior( t , bottomSheetDialog , -1 );
-            }
-        } );
-        add_image.setOnLongClickListener( new View.OnLongClickListener() {
+        backupIcon.setOnClickListener( new View.OnClickListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
-            public boolean onLongClick(View view) {
-                final Dialog dialog = getDialog( view );
-                final EditText editText = dialog.findViewById( R.id.pass_deco );
-                editText.setVisibility( View.GONE );
-                final TextView dialogTitle = dialog.findViewById( R.id.dialog_title );
-                dialogTitle.setText( "备份还原数据" );
-                final Button update = dialog.findViewById( R.id.quit );
-                update.setText( "取消" );
-                update.setOnClickListener( new View.OnClickListener() {
+            public void onClick(View view) {
+                final Dialog dialog = getDialog( view,1 );
+                final Button qiut = dialog.findViewById( R.id.quit );
+                qiut.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
                     }
                 } );
-                final Button enter = dialog.findViewById( R.id.back );
-                enter.setText( "备份" );
+                final Button backup = dialog.findViewById( R.id.backup );
 
                 final ListView listView = dialog.findViewById( R.id.db_list );
-                List list = getList( getDBFiles() );
-                myAdapter = new FileListAdapter( list , mContext );
-                listView.setVisibility( View.VISIBLE );
+                List list = getBackupFileNameList( getDBFiles() );
+                myAdapter = new FileListAdapter( list ,PassList.this );
                 listView.setAdapter( myAdapter );
 
-                enter.setOnClickListener( new View.OnClickListener() {
+                backup.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String date = getFormatData();
@@ -251,8 +206,24 @@ public class PassList extends AppCompatActivity {
                         } else {
                             showToast( PassList.this , "木有设备存储读写权限！" , 1000 );
                         }
-                        myAdapter.setFiles( getList( getDBFiles() ) );
+                        myAdapter.setFiles( getBackupFileNameList( getDBFiles() ) );
                         myAdapter.notifyDataSetChanged();
+                    }
+                } );
+                listView.setOnTouchListener( new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v , MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                x = event.getX();
+                                Log.e(TAG,""+x);
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                x = event.getX();
+                                Log.e(TAG,""+x);
+                                break;
+                        }
+                        return false;
                     }
                 } );
 
@@ -260,35 +231,28 @@ public class PassList extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onItemClick(AdapterView <?> parent , View view , int position , long id) {
-                        initPopWindow( view , getDBFiles() , position );
+                        initPopWindow( view, getDBFiles() , position );
+
                     }
                 } );
 
-                listView.setOnTouchListener( new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v , MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                x = event.getX();
-                                //System.out.println( x );
-                                break;
-                            case MotionEvent.ACTION_MOVE:
-                                x = event.getX();
-                                //System.out.println( x );
-                                break;
-                        }
-                        return false;
-                    }
-                } );
+
                 dialog.show();
-                return true;
             }
         } );
-
-        bindView( 0 );
     }
 
-    private List <String> getList(File[] files) {
+    private void initView() {
+        backupIcon = findViewById( R.id.backup_list );
+        gridView =findViewById( R.id.pass_list );
+        title_text = findViewById( R.id.text_pass_list );
+        search_ed = findViewById( R.id.search );
+        serch_img = findViewById( R.id.search_img );
+        add = findViewById( R.id.floatingActionButton );
+        
+    }
+
+    private List <String> getBackupFileNameList(File[] files) {
         if (files != null) {
             final List <String> listItem = new ArrayList <>();
             for (int i = 0; i < files.length; i++) {
@@ -310,11 +274,25 @@ public class PassList extends AppCompatActivity {
         return files;
     }
 
-    private Dialog getDialog(View view) {
+    private Dialog getDialog(View view,int type) {
         final Dialog dialog = new Dialog( view.getContext() );
         dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
         dialog.setCancelable( true );
-        dialog.setContentView( R.layout.pass_input_auth_dialog );
+        switch (type){
+            case 1:
+                dialog.setContentView( R.layout.show_backup_db_dialog );
+                break;
+            case 2:
+                dialog.setContentView( R.layout.pass_show_dialog );
+                break;
+            case 3:
+                dialog.setContentView( R.layout.pass_input_dialog );
+                break;
+            default:
+                break;
+        }
+
+
         return dialog;
     }
 
@@ -322,7 +300,6 @@ public class PassList extends AppCompatActivity {
         t[0].setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Account account = new Account();
                 String[] inputMsgT = new String[4];
                 inputMsgT[0] = t[1].getText().toString();
@@ -340,12 +317,12 @@ public class PassList extends AppCompatActivity {
                             passDb.addData( account );
                             DbUtil.DbBackups( getFormatData() + "（自动备份）" , PassList.this );
                         } else {
-                            passDb.upData( account , RecyAdapter.getmDatas().get( posi ).getId() );
+                            passDb.upData( account , accountAdapter.getmDatas().get( posi ).getId() );
                         }
                         //垃圾回收器回收
                         inputMsg = null;
                         bottomSheetDialog.dismiss();
-                        bindView( 0 );
+                        refresh( 0 );
                         System.gc();
                     } else {
                         showToast( PassList.this , "输入密码匹配失败！" , 1000 );
@@ -378,14 +355,11 @@ public class PassList extends AppCompatActivity {
         return bottomSheetDialog;
     }
 
-    private void bindView(int something) {
+    private void refresh(int something) {
         s = passDb.getAll();
-
         String temp = search_ed.getText().toString().trim();
         if (something == 0 || temp.equals( "" )) {
-
-            //accountAdapter = new AccountAdapter( s , PassList.this , inPass );
-            RecyAdapter.setmDatas( s );
+            accountAdapter.setmDatas( s );
         } else if (something == 1) {
             LinkedList <Account> r = new LinkedList <>();
             for (int i = 0; i < s.size(); i++) {
@@ -395,12 +369,11 @@ public class PassList extends AppCompatActivity {
                     r.add( s.get( i ) );
                 }
             }
-            //accountAdapter = new AccountAdapter( r , PassList.this , inPass );
-            RecyAdapter.setmDatas( r );
+            accountAdapter.setmDatas( r );
         }
         GridLayoutManager grid=new GridLayoutManager(this,2);
         gridView.setLayoutManager(grid);
-        gridView.setAdapter( RecyAdapter );
+        gridView.setAdapter( accountAdapter );
 
     }
 
@@ -448,8 +421,7 @@ public class PassList extends AppCompatActivity {
         }
     }
 
-    private void messageDialog(View pareV) {
-        View view = LayoutInflater.from( mContext ).inflate( R.layout.meg_dialog , null , false );
+    private PopupWindow popWindowsShow(View pareV, int xoff, int yoff,View view) {
         //1.构造一个PopupWindow，参数依次是加载的View，宽高
         final PopupWindow popWindow = new PopupWindow( view ,
                 ViewGroup.LayoutParams.WRAP_CONTENT , ViewGroup.LayoutParams.WRAP_CONTENT , true );
@@ -463,60 +435,31 @@ public class PassList extends AppCompatActivity {
         } );
         popWindow.setBackgroundDrawable( new ColorDrawable( 0x49463e ) );    //要为popWindow设置一个背景才有效
         //设置popupWindow显示的位置，参数依次是参照View，x轴的偏移量，y轴的偏移量
-        popWindow.showAsDropDown( pareV , pareV.getWidth() - 65 , 0 );
+        popWindow.showAsDropDown( pareV , xoff , yoff );
+        return popWindow;
     }
 
+    private View getView(int resid){
+        View view =LayoutInflater.from( this ).inflate( resid, null , false );
+        return view;
+    }
+
+    @SuppressLint("ResourceType")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void initPopWindow(View pareV , final File[] files , final int position) {
-
-        View view = LayoutInflater.from( mContext ).inflate( R.layout.item_popup , null , false );
+        View view=getView( R.layout.item_popup );
+        //1.构造一个PopupWindow，参数依次是加载的View，宽高
+        final PopupWindow popWindow = popWindowsShow( pareV , (int) x-35 , -pareV.getHeight() / 2 + 20 ,view);
+        //设置popupWindow里的按钮的事件
         TextView btn_xixi = view.findViewById( R.id.delete_db );
         TextView btn_hehe = view.findViewById( R.id.rest_db );
-        //1.构造一个PopupWindow，参数依次是加载的View，宽高
-        final PopupWindow popWindow = new PopupWindow( view ,
-                ViewGroup.LayoutParams.WRAP_CONTENT , ViewGroup.LayoutParams.WRAP_CONTENT , true );
-
-        popWindow.setAnimationStyle( R.anim.anim_pop );  //设置加载动画
-
-        //这些为了点击非PopupWindow区域，PopupWindow会消失的，如果没有下面的
-        //代码的话，你会发现，当你把PopupWindow显示出来了，无论你按多少次后退键
-        //PopupWindow并不会关闭，而且退不出程序，加上下述代码可以解决这个问题
-        popWindow.setTouchable( true );
-        popWindow.setTouchInterceptor( new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v , MotionEvent event) {
-                /*switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        x=event.getX();
-                        System.out.println( x );
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        x=event.getX();
-                        System.out.println( x );
-                        break;
-                }*/
-                return false;
-                // 这里如果返回true的话，touch事件将被拦截
-                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
-            }
-        } );
-        popWindow.setBackgroundDrawable( new ColorDrawable( 0x00000000 ) );    //要为popWindow设置一个背景才有效
-
-
-        //设置popupWindow显示的位置，参数依次是参照View，x轴的偏移量，y轴的偏移量
-        popWindow.showAsDropDown( pareV , (int) (x - pareV.getX() - 45) , -pareV.getHeight() / 2 + 20 );
-
-        //设置popupWindow里的按钮的事件
         btn_xixi.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int i = FileUtil.deleteFile( files[position].getName() );
-                if (i == 0) {
-                    showToast( PassList.this , "删除成功！" , 1000 );
-                } else if (i == 1) {
-                    showToast( PassList.this , "删除失败！" , 1000 );
-                }
-                myAdapter.setFiles( getList( getDBFiles() ) );
+                String s = i==0 ? "删除成功！":"删除失败！";
+                showToast( PassList.this , s , 1000 );
+                myAdapter.setFiles( getBackupFileNameList( getDBFiles() ) );
                 myAdapter.notifyDataSetChanged();
                 popWindow.dismiss();
             }
@@ -527,13 +470,10 @@ public class PassList extends AppCompatActivity {
             public void onClick(View v) {
                 //DbUtil.restore(files[position].getName(),PassList.this);
                 int i = DbUtil.restore( files[position].getName() , PassList.this );
-                if (i == 1) {
-                    bindView( 0 );
-                    showToast( PassList.this , "还原成功！" , 1000 );
-                } else {
-                    showToast( PassList.this , "还原失败！" , 1000 );
-                }
-                myAdapter.setFiles( getList( getDBFiles() ) );
+                String s = i==1 ? "还原成功！":"还原失败！";
+                if (i == 1) refresh( 0 );
+                showToast( PassList.this , s , 1000 );
+                myAdapter.setFiles( getBackupFileNameList( getDBFiles() ) );
                 myAdapter.notifyDataSetChanged();
                 popWindow.dismiss();
             }
@@ -541,9 +481,9 @@ public class PassList extends AppCompatActivity {
     }
 
     private static String getFormatData() {
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd-HH-mm-ss" );//设置日期格式
-        String date = df.format( new Date() );
-        return date;
+        return df.format( new Date() );
     }
 
 

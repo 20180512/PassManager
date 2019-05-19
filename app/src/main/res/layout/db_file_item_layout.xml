@@ -10,7 +10,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:background="@drawable/ic_insert_drive_file"
+        android:background="@drawable/ic_library_books_black_24dp"
         android:baselineAlignBottom="true"
         android:paddingLeft="8dp" />
 

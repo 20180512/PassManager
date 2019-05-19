@@ -69,6 +69,11 @@ public abstract class SurperAdapter<T> extends RecyclerView.Adapter<SurperAdapte
             TextView view = getView(id);
             view.setText(value);
         }
+        public void gone(int id){
+            TextView view = getView(id);
+            view.setVisibility( View.GONE);
+        }
+
     }
 
     public void setmDatas(List <T> mDatas) {

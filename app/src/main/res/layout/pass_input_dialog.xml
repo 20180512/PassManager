@@ -12,7 +12,7 @@
         android:layout_height="35dp"
         android:background="@color/dialog_title"
         android:gravity="center_vertical"
-        android:text=" ⬛ 明文密码"
+        android:text=" ⬛ 请输入密码"
         android:textAlignment="center"
         android:textColor="@color/dialog_text"
         android:textStyle="bold" />
@@ -29,25 +29,6 @@
         android:textColor="@color/colorAccent"
         android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/textview_pass"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/textback"
-        android:gravity="center"
-        android:text="TextView"
-        android:textColor="@color/colorAccent"
-        android:textSize="24sp"
-        android:visibility="gone" />
-
-    <ListView
-        android:id="@+id/db_list"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="@color/textback"
-        android:minHeight="25dp"
-        android:visibility="gone" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -55,21 +36,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/quit"
+            android:id="@+id/exit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/button_type_update"
-            android:text=" ⬛ 修改"
+            android:text=" ⬛ 取消"
             android:textColor="@drawable/text_type_update" />
 
         <Button
-            android:id="@+id/back"
+            android:id="@+id/entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/button_type_update"
-            android:text=" ⬛ 提交"
+            android:text=" ⬛ 确认"
             android:textColor="@drawable/text_type_update" />
     </LinearLayout>
 </LinearLayout>

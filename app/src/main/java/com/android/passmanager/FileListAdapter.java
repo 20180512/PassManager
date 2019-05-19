@@ -45,17 +45,12 @@ public class FileListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.title.setText( files.get(position));
-
         return convertView;
     }
 
     private class ViewHolder{
         TextView title;
 
-    }
-
-    List <String> getFiles() {
-        return files;
     }
 
     public void setFiles(List <String> files) {
