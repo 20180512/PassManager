@@ -9,14 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.passmanager.Account;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public abstract class SurperAdapter<T> extends RecyclerView.Adapter<SurperAdapter.VH>{
 
-    private List<T> mDatas;
+    private ArrayList<T> mDatas;
     private Context mContext;
 
-    public SurperAdapter(List <T> mDatas, Context context){
+    public SurperAdapter(ArrayList <T> mDatas, Context context){
         this.mDatas=mDatas;
         this.mContext=context;
     }
@@ -76,12 +82,37 @@ public abstract class SurperAdapter<T> extends RecyclerView.Adapter<SurperAdapte
 
     }
 
-    public void setmDatas(List <T> mDatas) {
-        this.mDatas = mDatas;
-        notifyDataSetChanged();
+    public void add(T account,int position){
+        mDatas.add(position,account );
+        notifyItemInserted(position);
+        if (position != mDatas.size()) {
+            notifyItemRangeChanged(position, mDatas.size() - position);
+        }
     }
 
-    public List <T> getmDatas() {
+    public void updata(T account,int position){
+        mDatas.remove( position );
+        mDatas.add(position,account );
+        notifyItemChanged( position );
+        if (position != mDatas.size()) {
+            notifyItemRangeChanged(position, mDatas.size() - position);
+        }
+    }
+
+    public void remove(int position){
+        mDatas.remove( position );
+        notifyItemRemoved( position );
+        if (position != mDatas.size()) {
+            notifyItemRangeChanged(position, mDatas.size() - position);
+        }
+    }
+
+
+    public void setmDatas(ArrayList <T> mDatas) {
+        this.mDatas = mDatas;
+    }
+
+    public ArrayList <T> getmDatas() {
         return mDatas;
     }
 }

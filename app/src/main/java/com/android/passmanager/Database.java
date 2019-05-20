@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -67,9 +68,9 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public LinkedList<Account> getAll(){
+    public ArrayList <Account> getAll(){
         SQLiteDatabase database = this.getReadableDatabase();
-        LinkedList<Account> historyList = new LinkedList<>();
+        ArrayList<Account> historyList = new ArrayList <>();
 
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME /*+" ORDER BY "+TITLE */, null);
         try {

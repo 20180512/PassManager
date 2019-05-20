@@ -70,14 +70,12 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
             showToast(context,"第一次请输入账号密码注册！",1000);
         }else{
             finishAuth();
-            Intent i = new Intent(context, PasswordActivity.class);
+            Intent i = new Intent(context, PassList.class);
             //showToast(context,"验证成功！",1000);
             i.putExtra( "p",pass );
             context.startActivity(i);
             activity.finish();
         }
-
-
 
     }
 

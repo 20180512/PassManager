@@ -14,9 +14,17 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <LinearLayout
+            android:id="@+id/parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/search_img"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search_black"
+                tools:ignore="VectorDrawableCompat" />
 
             <EditText
                 android:id="@+id/search"
@@ -42,13 +50,6 @@
                 android:textSize="24sp" />
 
             <ImageView
-                android:id="@+id/search_img"
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_search_black"
-                tools:ignore="VectorDrawableCompat" />
-
-            <ImageView
                 android:id="@+id/backup_list"
                 android:layout_width="45dp"
                 android:layout_height="wrap_content"
@@ -61,7 +62,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:background="@color/color"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -69,15 +71,15 @@
         android:id="@+id/include"
         layout="@layout/content_pass_list" />
 
-    <android.support.design.widget.FloatingActionButton
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
         android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/Dark"
         app:layout_anchorGravity="end|bottom"
-        app:srcCompat="@mipmap/add_ico"
-        app:layout_behavior="com.android.passmanager.Util.HideFab"/>
+        app:layout_behavior="com.android.passmanager.Util.HideFab"
+        app:srcCompat="@mipmap/add_ico" />
 
 </android.support.design.widget.CoordinatorLayout>

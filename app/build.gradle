@@ -10,8 +10,8 @@ android {
         applicationId "com.android.passmanager"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 11
-        versionName "19.5.17"
+        versionCode 12
+        versionName "19.5.21"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

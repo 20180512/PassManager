@@ -1,6 +1,9 @@
 package com.android.passmanager;
 
 import android.Manifest;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
@@ -22,8 +25,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.*;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.Transformation;
 import android.widget.*;
 import com.android.passmanager.Util.DbUtil;
 import com.android.passmanager.Util.FileUtil;
@@ -51,7 +58,13 @@ public class PassList extends AppCompatActivity {
     private String inPass;
     private ImageView backupIcon;
     float x;
-    private LinkedList <Account> s;
+    GridLayoutManager grid;
+
+
+    ViewGroup container = null;
+    private LayoutTransition mTransitioner;
+
+    private ArrayList <Account> s;
     private SurperAdapter<Account> accountAdapter;
     private String firstInTag;
     private FloatingActionButton add;
@@ -63,15 +76,41 @@ public class PassList extends AppCompatActivity {
         setContentView( R.layout.activity_pass_list );
         //检查权限
         requestPermission();
-        
+        container = new LinearLayout(this);
+        container.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
         initView();
+        ViewGroup parent = findViewById(R.id.parent);
+        parent.removeView( backupIcon );
+        parent.removeView( search_ed );
+        parent.removeView( title_text );
+        container.addView( search_ed );
+        container.addView( title_text );
+        container.addView(backupIcon);
+
+
         
         initData();
-        
+
+        resetTransition();
+
+        parent.addView(container);
         initAction();
+
+
+
         /*Toolbar toolbar = findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );*/
         refresh( 0 );
+        grid=new GridLayoutManager(this,2);
+        gridView.setLayoutManager(grid);
+        grid.scrollToPosition(accountAdapter.getmDatas().size()-1);
+        gridView.setAdapter( accountAdapter );
+    }
+    private void resetTransition() {
+        mTransitioner = new LayoutTransition();
+        container.setLayoutTransition(mTransitioner);
     }
 
     private void initData() {
@@ -84,15 +123,16 @@ public class PassList extends AppCompatActivity {
             }
 
             @Override
-            public void convert(final VH holder , Account data , final int position , Context mContext) {
+            public void convert(final VH holder , final Account data , final int position , Context mContext) {
                 holder.setText( R.id.title_item,decrypt( inPass,data.getTitle() ) );
                 holder.setText( R.id.account_item,decrypt( inPass,data.getAccount() ) );
                 holder.itemView.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         final Dialog dialog=getDialog( v, 2);
                         final TextView pass =dialog.findViewById( R.id.textview_pass );
-                        pass.setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getPassword()) );
+                        pass.setText( decrypt( inPass,data.getPassword()) );
                         Button up = dialog.findViewById( R.id. updata);
                         up.setOnClickListener( new View.OnClickListener() {
                             @Override
@@ -100,9 +140,11 @@ public class PassList extends AppCompatActivity {
                                 dialog.dismiss();
                                 BottomSheetDialog bottomSheetDialog=getBottomSheetDialog( v );
                                 TextView[] t=inBottomSheetDialog( bottomSheetDialog );
-                                t[0].setText( "修改" );
-                                t[1].setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getTitle()) );
-                                t[2].setText( decrypt( inPass,accountAdapter.getmDatas().get( position ).getAccount()) );
+                                t[0].setText( "确认修改" );
+                                t[1].setText( decrypt( inPass,data.getTitle()) );
+                                t[2].setText( decrypt( inPass,data.getAccount()) );
+                                t[5].setText( "修改数据" );
+                                behavior(t,bottomSheetDialog,position);
                                 bottomSheetDialog.show();
                             }
                         } );
@@ -120,18 +162,59 @@ public class PassList extends AppCompatActivity {
                         dialog.show();
                     }
                 } );
+                final LinearLayout view=holder.itemView.findViewById( R.id.hide_item_view );
+                view.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(TAG,"item_position:"+position);
+                        passDb.deleteData( data.getId() );
+                        accountAdapter.remove( position );
+
+                        //refresh( 1 );
+                    }
+                } );
                 holder.itemView.setOnLongClickListener( new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-
-                        return false;
+                        final float curTranslationX = view.getTranslationX();
+                        float width=view.getWidth();
+                        if(curTranslationX==0) {
+                            final ObjectAnimator animator = ObjectAnimator.ofFloat( view , "translationX" , curTranslationX ,
+                                    -width , -width , -width , -width , -width , curTranslationX );
+                            animator.setDuration( 2000 );
+                            animator.start();
+                        }
+                        /*view1.scrollBy( 90,0 );
+                        new Thread(  ){
+                            public void run(){
+                                try {
+                                    Thread.sleep( 1500 );
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                view1.scrollBy( -90,0 );
+                            }
+                        }.start();*/
+                        return true;
                     }
                 } );
             }
         };
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initAction() {
+        gridView.setOnTouchListener( new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v , MotionEvent event) {
+                if (search_ed.getVisibility() == View.VISIBLE) {
+                    search_ed.setVisibility( View.GONE );
+                    title_text.setVisibility( View.VISIBLE );
+                }
+                return false;
+            }
+        } );
+
         add.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,10 +234,14 @@ public class PassList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (search_ed.getVisibility() == View.VISIBLE) {
+
                     search_ed.setVisibility( View.GONE );
+                    //backupIcon.setVisibility( View.VISIBLE );
                     title_text.setVisibility( View.VISIBLE );
                 } else {
                     search_ed.setVisibility( View.VISIBLE );
+                    search_ed.setText( "" );
+                    //backupIcon.setVisibility( View.GONE );
                     title_text.setVisibility( View.GONE );
                 }
             }
@@ -216,11 +303,11 @@ public class PassList extends AppCompatActivity {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 x = event.getX();
-                                Log.e(TAG,""+x);
+                                Log.i(TAG,""+x);
                                 break;
                             case MotionEvent.ACTION_MOVE:
                                 x = event.getX();
-                                Log.e(TAG,""+x);
+                                Log.i(TAG,""+x);
                                 break;
                         }
                         return false;
@@ -291,12 +378,10 @@ public class PassList extends AppCompatActivity {
             default:
                 break;
         }
-
-
         return dialog;
     }
 
-    private void behavior(final TextView[] t , final Dialog bottomSheetDialog , final int posi) {
+    private void behavior(final TextView[] t , final Dialog bottomSheetDialog , final int position) {
         t[0].setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,16 +398,25 @@ public class PassList extends AppCompatActivity {
                         account.setTitle( inputMsg[0] );
                         account.setAccount( inputMsg[1] );
                         account.setPassword( inputMsg[2] );
-                        if (posi < 0) {
+                        if (position < 0) {
+                            bottomSheetDialog.dismiss();
                             passDb.addData( account );
+                            accountAdapter.add( account,0 );
+                            //refresh( 0 );
+                            //grid.scrollToPosition(s.size()-1);
                             DbUtil.DbBackups( getFormatData() + "（自动备份）" , PassList.this );
                         } else {
-                            passDb.upData( account , accountAdapter.getmDatas().get( posi ).getId() );
+                            Log.i(TAG,"item_position:"+position);
+                            bottomSheetDialog.dismiss();
+                            passDb.upData( account , accountAdapter.getmDatas().get( position ).getId() );
+                            accountAdapter.updata( account,position );
+                            DbUtil.DbBackups( getFormatData() + "（自动备份）" , PassList.this );
+                            //refresh( 0 );
                         }
                         //垃圾回收器回收
                         inputMsg = null;
-                        bottomSheetDialog.dismiss();
-                        refresh( 0 );
+
+                        //refresh( 0 );
                         System.gc();
                     } else {
                         showToast( PassList.this , "输入密码匹配失败！" , 1000 );
@@ -342,7 +436,7 @@ public class PassList extends AppCompatActivity {
         t[2] = bottomSheetDialog.findViewById( R.id.account );
         t[3] = bottomSheetDialog.findViewById( R.id.password );
         t[4] = bottomSheetDialog.findViewById( R.id.reply );
-        t[5] = bottomSheetDialog.findViewById( R.id.secPass );
+        t[5] = bottomSheetDialog.findViewById( R.id.add_dialog_title );
         return t;
     }
 
@@ -361,7 +455,7 @@ public class PassList extends AppCompatActivity {
         if (something == 0 || temp.equals( "" )) {
             accountAdapter.setmDatas( s );
         } else if (something == 1) {
-            LinkedList <Account> r = new LinkedList <>();
+            ArrayList <Account> r = new ArrayList <>( );
             for (int i = 0; i < s.size(); i++) {
                 boolean title = decrypt( inPass , s.get( i ).getTitle() ).contains( temp );
                 boolean pass = decrypt( inPass , s.get( i ).getAccount() ).contains( temp );
@@ -371,10 +465,7 @@ public class PassList extends AppCompatActivity {
             }
             accountAdapter.setmDatas( r );
         }
-        GridLayoutManager grid=new GridLayoutManager(this,2);
-        gridView.setLayoutManager(grid);
-        gridView.setAdapter( accountAdapter );
-
+        accountAdapter.notifyDataSetChanged();
     }
 
     private String[] encryptStringArray(String[] strings , String key) {
