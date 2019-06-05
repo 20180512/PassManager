@@ -67,12 +67,11 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         if(firstIn){
-            showToast(context,"第一次请输入账号密码注册！",1000);
+            showToast(context,context.getString( R.string.firstInApp),1000);
         }else{
             finishAuth();
             Intent i = new Intent(context, PassList.class);
-            //showToast(context,"验证成功！",1000);
-            i.putExtra( "p",pass );
+            i.putExtra( "pass",pass );
             context.startActivity(i);
             activity.finish();
         }

@@ -31,4 +31,5 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="firstInApp">第一次请输入账号密码注册！</string>
 </resources>

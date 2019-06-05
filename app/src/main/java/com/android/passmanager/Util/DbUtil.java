@@ -19,13 +19,19 @@ public class DbUtil {
     @SuppressLint("SdCardPath")
     private static final String FileDirName="PassManage";
 
-    public  static int restore(String s, Context context) {
+    /**
+     * 还原数据
+     * @param fileName 要还原的数据文件名
+     * @param context
+     * @return  1为还原成功，-1为还原失败
+     */
+    public  static int restore(String fileName, Context context) {
         String cachePath = context.getCacheDir().getPath();
 
         File cacheDir = new File( cachePath );
-        File sdcardDBFile = new File( Environment.getExternalStorageDirectory().getPath() + File.separator + FileDirName , s );
+        File sdcardDBFile = new File( Environment.getExternalStorageDirectory().getPath() + File.separator + FileDirName , fileName );
 
-        File oldNameFile = new File( cachePath , s );
+        File oldNameFile = new File( cachePath , fileName );
         File newNameFile = new File( cachePath , "passEngine.db" );
 
         File dbFile = context.getDatabasePath( "passEngine.db" );
@@ -56,6 +62,12 @@ public class DbUtil {
 
     }
 
+    /**
+     * 备份数据到sdcard
+     * @param date 备份日期数据
+     * @param context
+     * @return 1为备份成功，-1为备份失败
+     */
     public static int DbBackups(String date,Context context) {
         String path = context.getDatabasePath( "passEngine.db" ).getPath();
 
@@ -71,10 +83,11 @@ public class DbUtil {
             fileCopy( dbFile, backup );
         } catch (IOException e) {
             e.printStackTrace();
+            return -1;
         }
 
         File oldName = new File( Environment.getExternalStorageDirectory().getPath()+File.separator+FileDirName,"passEngine.db" );
-        File newName = new File( Environment.getExternalStorageDirectory().getPath()+File.separator+FileDirName,"USER_DATA" + date );
+        File newName = new File( Environment.getExternalStorageDirectory().getPath()+File.separator+FileDirName,"DATA" + date );
 
         if (oldName.renameTo( newName )) {
             return 1;
@@ -83,6 +96,12 @@ public class DbUtil {
         }
     }
 
+    /**
+     * 过滤字符
+     * @param str 原文
+     * @return 输出string
+     * @throws PatternSyntaxException
+     */
     public static String StringFilter(String str)throws PatternSyntaxException {
         String regEx = "[/\\:*?<>|\"\n\t'-]"; //要过滤掉的字符
         Pattern p = Pattern.compile(regEx);

@@ -86,12 +86,9 @@ public class Login extends AppCompatActivity {
         }else {
             tip.setText( getString(R.string.input_then_query) );
         }
-        underText.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //帮助文字
-                // underText.setText(  );
-            }
+        underText.setOnClickListener( v -> {
+            //帮助文字
+            // underText.setText(  );
         } );
         //数据升级操作
         /*tip.setOnClickListener( new View.OnClickListener() {
@@ -111,80 +108,78 @@ public class Login extends AppCompatActivity {
         } );*/
         passin =findViewById( R.id.passinput );
         fingerview = findViewById( R.id.fingerView );
-        fingerview.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userinStr =userin.getText().toString().trim();
-                passinStr = Aes.getMD5(passin.getText().toString().trim(),16 );
-                if (passin.getText().toString().trim().equals( "" )&&userinStr.equals( "" )){
-                    showToast( Login.this,getString(R.string.input_name_password),1000 );
-                }else if (userinStr.equals( "" )){
-                    showToast( Login.this,getString(R.string.input_name),1000 );
-                    Log.w(TAG,"loginName empty");
-                }else if(passin.getText().toString().trim().equals( "" )){
-                    showToast( Login.this,getString(R.string.input_password),1000 );
-                    Log.w(TAG,"password empty");
-                }else if(str!=null&&userinStr.equals( str[0] )&&passinStr.equals( str[1] )){
+        fingerview.setOnClickListener( v -> {
+            userinStr =userin.getText().toString().trim();
+            passinStr = Aes.getMD5(passin.getText().toString().trim(),16 );
+            if (passin.getText().toString().trim().equals( "" )&&userinStr.equals( "" )){
+                showToast( Login.this,getString(R.string.input_name_password),1000 );
+            }else if (userinStr.equals( "" )){
+                showToast( Login.this,getString(R.string.input_name),1000 );
+                Log.w(TAG,"loginName empty");
+            }else if(passin.getText().toString().trim().equals( "" )){
+                showToast( Login.this,getString(R.string.input_password),1000 );
+                Log.w(TAG,"password empty");
+            }else if(str!=null&&userinStr.equals( str[0] )&&passinStr.equals( str[1] )){
+                Intent intent =new Intent( Login.this,PassList.class );
+                intent.putExtra( "p",passinStr );
+                startActivity( intent );
+                Login.this.finish();
+                startAuth( 0 );
+            }else if(str==null){
+                final String clearPass =passin.getText().toString().trim();
+
+                //showToast( Login.this,"你的密码是："+passin.getText().toString().trim()+"，请保管妥当",3000 );
+                final Dialog dialog = new Dialog( v.getContext() );
+                dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+                dialog.setCancelable( true );
+                dialog.setContentView( R.layout.pass_show_dialog );
+                TextView dialogName =dialog.findViewById( R.id.dialog_title );
+                dialogName.setText( getString(R.string.remenber_tip) );
+                TextView textView = dialog.findViewById( R.id.textview_pass );
+                final Button update = dialog.findViewById( R.id.updata );
+                final Button copy = dialog.findViewById( R.id.copy );
+                textView.setText( clearPass );
+                copy.setText( getString(R.string.copy) );
+                update.setText( getString(R.string.i_am_remenber) );
+                /*copy.setOnClickListener( v1 -> {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
+                    ClipData clip = ClipData.newPlainText( null , clearPass );
+                    clipboard.setPrimaryClip( clip );
+                    Log.i( TAG,"password copy into clipboard" );
+                    showToast( Login.this,getString(R.string.copyed),1000 );
+                } );*/
+                copy.setOnClickListener( v1 -> {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
+                    ClipData clip = ClipData.newPlainText( null , clearPass );
+                    clipboard.setPrimaryClip( clip );
+                    Log.i( TAG,"password copy into clipboard" );
+                    showToast( Login.this,getString(R.string.copyed),1000 );
+                } );
+
+                update.setOnClickListener( v12 -> {
                     Intent intent =new Intent( Login.this,PassList.class );
                     intent.putExtra( "p",passinStr );
+                    intent.putExtra( "firstTag","yes" );
                     startActivity( intent );
+                    //用户点击已记住将密码写进数据库
+                    login.addData( new Account("login",userinStr,passinStr));
+                    Log.i( TAG,"password write into db" );
+
                     Login.this.finish();
                     startAuth( 0 );
-                }else if(str==null){
-                    final String clearPass =passin.getText().toString().trim();
-
-                    //showToast( Login.this,"你的密码是："+passin.getText().toString().trim()+"，请保管妥当",3000 );
-                    final Dialog dialog = new Dialog( v.getContext() );
-                    dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
-                    dialog.setCancelable( true );
-                    dialog.setContentView( R.layout.pass_show_dialog );
-                    TextView dialogName =dialog.findViewById( R.id.dialog_title );
-                    dialogName.setText( getString(R.string.remenber_tip) );
-                    TextView textView = dialog.findViewById( R.id.textview_pass );
-                    final Button update = dialog.findViewById( R.id.updata );
-                    final Button copy = dialog.findViewById( R.id.copy );
-                    textView.setText( clearPass );
-                    copy.setText( getString(R.string.copy) );
-                    update.setText( getString(R.string.i_am_remenber) );
-                    copy.setOnClickListener( new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
-                            ClipData clip = ClipData.newPlainText( null , clearPass );
-                            clipboard.setPrimaryClip( clip );
-                            Log.i( TAG,"password copy into clipboard" );
-                            showToast( Login.this,getString(R.string.copyed),1000 );
-                        }
-                    } );
-
-                    update.setOnClickListener( new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent =new Intent( Login.this,PassList.class );
-                            intent.putExtra( "p",passinStr );
-                            intent.putExtra( "firstTag","yes" );
-                            startActivity( intent );
-                            //用户点击已记住将密码写进数据库
-                            login.addData( new Account("login",userinStr,passinStr));
-                            Log.i( TAG,"password write into db" );
-
-                            Login.this.finish();
-                            startAuth( 0 );
-                            dialog.dismiss();
+                    dialog.dismiss();
 
 
-                        }
-                    } );
-                    dialog.show();
+                } );
+                dialog.show();
 
-                }else{
-                    showToast( Login.this,getString(R.string.login_name_password_err),3000 );
-                    Log.w(TAG,"password err");
-
-                }
-
+            }else{
+                showToast( Login.this,getString(R.string.login_name_password_err),3000 );
+                Log.w(TAG,"password err");
 
             }
+
+
         } );
         startAuth( 1 );
     }
@@ -287,12 +282,9 @@ public class Login extends AppCompatActivity {
 
                     if (initCipher()&&i==1) {
                         FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject( cipher );
-                        final boolean noData = (str == null);
+                        boolean noData = (str == null);
                         if (noData) {
-                            String[] str1 = new String[2];
-                            str1[0]="null";
-                            str1[1]="null";
-                            helper = new FingerprintHandler(this, Login.this,noData,str1[1]);
+                            helper = new FingerprintHandler(this, Login.this,noData,"null");
                         }else{
                             helper = new FingerprintHandler(this, Login.this,noData,str[1]);
                         }

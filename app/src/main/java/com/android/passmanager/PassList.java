@@ -126,52 +126,40 @@ public class PassList extends AppCompatActivity {
             public void convert(final VH holder , final Account data , final int position , Context mContext) {
                 holder.setText( R.id.title_item,decrypt( inPass,data.getTitle() ) );
                 holder.setText( R.id.account_item,decrypt( inPass,data.getAccount() ) );
-                holder.itemView.setOnClickListener( new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                holder.itemView.setOnClickListener( v -> {
 
-                        final Dialog dialog=getDialog( v, 2);
-                        final TextView pass =dialog.findViewById( R.id.textview_pass );
-                        pass.setText( decrypt( inPass,data.getPassword()) );
-                        Button up = dialog.findViewById( R.id. updata);
-                        up.setOnClickListener( new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
-                                BottomSheetDialog bottomSheetDialog=getBottomSheetDialog( v );
-                                TextView[] t=inBottomSheetDialog( bottomSheetDialog );
-                                t[0].setText( "确认修改" );
-                                t[1].setText( decrypt( inPass,data.getTitle()) );
-                                t[2].setText( decrypt( inPass,data.getAccount()) );
-                                t[5].setText( "修改数据" );
-                                behavior(t,bottomSheetDialog,position);
-                                bottomSheetDialog.show();
-                            }
-                        } );
-                        Button copy=dialog.findViewById(  R.id.copy );
-                        copy.setOnClickListener( new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
-                                ClipData clip = ClipData.newPlainText( null , pass.getText().toString().trim() );
-                                clipboard.setPrimaryClip( clip );
-                                showToast( PassList.this , "密码已复制到粘贴板" , 1000 );
-                                dialog.dismiss();
-                            }
-                        } );
-                        dialog.show();
-                    }
+                    final Dialog dialog=getDialog( v, 2);
+                    final TextView pass =dialog.findViewById( R.id.textview_pass );
+                    pass.setText( decrypt( inPass,data.getPassword()) );
+                    Button up = dialog.findViewById( R.id. updata);
+                    up.setOnClickListener( v1 -> {
+                        dialog.dismiss();
+                        BottomSheetDialog bottomSheetDialog=getBottomSheetDialog( v1 );
+                        TextView[] t=inBottomSheetDialog( bottomSheetDialog );
+                        t[0].setText( "确认修改" );
+                        t[1].setText( decrypt( inPass,data.getTitle()) );
+                        t[2].setText( decrypt( inPass,data.getAccount()) );
+                        t[5].setText( "修改数据" );
+                        behavior(t,bottomSheetDialog,position);
+                        bottomSheetDialog.show();
+                    } );
+                    Button copy=dialog.findViewById(  R.id.copy );
+                    copy.setOnClickListener( v12 -> {
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService( Context.CLIPBOARD_SERVICE );
+                        ClipData clip = ClipData.newPlainText( null , pass.getText().toString().trim() );
+                        clipboard.setPrimaryClip( clip );
+                        showToast( PassList.this , "密码已复制到粘贴板" , 1000 );
+                        dialog.dismiss();
+                    } );
+                    dialog.show();
                 } );
                 final LinearLayout view=holder.itemView.findViewById( R.id.hide_item_view );
-                view.setOnClickListener( new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i(TAG,"item_position:"+position);
-                        passDb.deleteData( data.getId() );
-                        accountAdapter.remove( position );
+                view.setOnClickListener( v -> {
+                    Log.i(TAG,"item_position:"+position);
+                    passDb.deleteData( data.getId() );
+                    accountAdapter.remove( position );
 
-                        //refresh( 1 );
-                    }
+                    //refresh( 1 );
                 } );
                 holder.itemView.setOnLongClickListener( new View.OnLongClickListener() {
                     @Override
@@ -285,8 +273,9 @@ public class PassList extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         String date = getFormatData();
-
-                        int i = DbUtil.DbBackups( date , PassList.this );
+                        int dataSize = accountAdapter.getmDatas().size();
+                        String fileName = "(包含"+dataSize+"条数据）";
+                        int i = DbUtil.DbBackups( date+fileName , PassList.this );
 
                         if (i == 1) {
                             showToast( PassList.this , "已备份至sdcard/PassManage目录下！" , 1000 );
@@ -403,8 +392,11 @@ public class PassList extends AppCompatActivity {
                             passDb.addData( account );
                             accountAdapter.add( account,0 );
                             //refresh( 0 );
+
                             //grid.scrollToPosition(s.size()-1);
-                            DbUtil.DbBackups( getFormatData() + "（自动备份）" , PassList.this );
+                            int dataSize = accountAdapter.getmDatas().size();
+                            String fileName = "(包含"+dataSize+"条数据）";
+                            DbUtil.DbBackups( getFormatData() + "-自动备份"+fileName , PassList.this );
                         } else {
                             Log.i(TAG,"item_position:"+position);
                             bottomSheetDialog.dismiss();
@@ -458,12 +450,13 @@ public class PassList extends AppCompatActivity {
             ArrayList <Account> r = new ArrayList <>( );
             for (int i = 0; i < s.size(); i++) {
                 boolean title = decrypt( inPass , s.get( i ).getTitle() ).contains( temp );
-                boolean pass = decrypt( inPass , s.get( i ).getAccount() ).contains( temp );
+                boolean pass  =  decrypt( inPass , s.get( i ).getAccount() ).contains( temp );
                 if (title || pass) {
                     r.add( s.get( i ) );
                 }
             }
-            accountAdapter.setmDatas( r );
+            s=r;
+            accountAdapter.setmDatas( s );
         }
         accountAdapter.notifyDataSetChanged();
     }
@@ -562,7 +555,8 @@ public class PassList extends AppCompatActivity {
                 //DbUtil.restore(files[position].getName(),PassList.this);
                 int i = DbUtil.restore( files[position].getName() , PassList.this );
                 String s = i==1 ? "还原成功！":"还原失败！";
-                if (i == 1) refresh( 0 );
+                //if (i == 1) refresh( 0 );
+                accountAdapter.notifyDataSetChanged();
                 showToast( PassList.this , s , 1000 );
                 myAdapter.setFiles( getBackupFileNameList( getDBFiles() ) );
                 myAdapter.notifyDataSetChanged();
@@ -573,7 +567,7 @@ public class PassList extends AppCompatActivity {
 
     private static String getFormatData() {
         @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd-HH-mm-ss" );//设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd" );//设置日期格式
         return df.format( new Date() );
     }
 
