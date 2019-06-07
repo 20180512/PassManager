@@ -17,4 +17,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.AppCompat.MyDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:textColorHint">@color/hint_color</item>
+        <item name="colorAccent">@color/temp</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/temp</item>
+    </style>
+
+
 </resources>

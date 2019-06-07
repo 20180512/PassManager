@@ -552,14 +552,10 @@ public class PassList extends AppCompatActivity {
         btn_hehe.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //DbUtil.restore(files[position].getName(),PassList.this);
                 int i = DbUtil.restore( files[position].getName() , PassList.this );
                 String s = i==1 ? "还原成功！":"还原失败！";
-                //if (i == 1) refresh( 0 );
-                accountAdapter.notifyDataSetChanged();
+                if (i == 1) refresh( 0 );
                 showToast( PassList.this , s , 1000 );
-                myAdapter.setFiles( getBackupFileNameList( getDBFiles() ) );
-                myAdapter.notifyDataSetChanged();
                 popWindow.dismiss();
             }
         } );

@@ -68,6 +68,8 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_login );
+        //getActionBar().hide();
+        setTitle( "验证身份" );
         mWebView = findViewById(R.id.background);
         WebSettings webSettings = mWebView.getSettings();
         //webSettings.setSavePassword(false);
@@ -262,6 +264,7 @@ public class Login extends AppCompatActivity {
                 fingerTouch=false;
                 userin = findViewById( R.id.userinput);
                 userin.setText( Build.MODEL );
+                //fingerview.setVisibility( View.GONE );
             }else if (fingerTouch){
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
                     showToast( Login.this,getString(R.string.please_accect_permission),1000 );

@@ -24,7 +24,8 @@
             android:name=".PasswordActivity"
             android:label="@string/title_activity_password"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Login">
+        <activity android:name=".Login"
+            android:theme="@style/Theme.AppCompat.MyDialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

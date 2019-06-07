@@ -10,6 +10,7 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import static com.android.passmanager.Util.MyToast.showToast;
 
@@ -71,7 +72,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         }else{
             finishAuth();
             Intent i = new Intent(context, PassList.class);
-            i.putExtra( "pass",pass );
+            i.putExtra( "p",pass );
             context.startActivity(i);
             activity.finish();
         }
