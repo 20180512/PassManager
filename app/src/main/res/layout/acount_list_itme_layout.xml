@@ -11,6 +11,7 @@
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"
     app:cardElevation="20dp"
+    android:background="@drawable/button_background"
     android:foreground="@drawable/cardview_click">
 
     <ImageView

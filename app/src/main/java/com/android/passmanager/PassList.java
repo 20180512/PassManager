@@ -81,6 +81,7 @@ public class PassList extends AppCompatActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
         initView();
+
         ViewGroup parent = findViewById(R.id.parent);
         parent.removeView( backupIcon );
         parent.removeView( search_ed );
@@ -103,11 +104,12 @@ public class PassList extends AppCompatActivity {
         /*Toolbar toolbar = findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );*/
         refresh( 0 );
-        grid=new GridLayoutManager(this,2);
+        grid=new GridLayoutManager(this,1);
         gridView.setLayoutManager(grid);
         grid.scrollToPosition(accountAdapter.getmDatas().size()-1);
         gridView.setAdapter( accountAdapter );
     }
+    //启用动画效果
     private void resetTransition() {
         mTransitioner = new LayoutTransition();
         container.setLayoutTransition(mTransitioner);
